@@ -1,7 +1,7 @@
 version: '2.1'
 
 networks:
-  app-tier:
+  kafkanet:
     driver: bridge
 
 services:
@@ -11,7 +11,7 @@ services:
       - '9092:9092'
       - '9093:9093'
     networks:
-      - app-tier
+      - kafkanet
     environment:
       - KAFKA_CFG_NODE_ID=0
       - KAFKA_CFG_PROCESS_ROLES=controller,broker
@@ -24,12 +24,30 @@ services:
       interval: 1s
       timeout: 60s
       retries: 60
+  spark:
+    image: 'bitnami/spark:latest'
+    command: 'spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.3 /app/spark.py'
+    ports:
+      - '8080:8080'
+      - '7077:7077'
+    volumes:
+      - './spark_app:/app'
+      - './config.ini:/config.ini'
+    networks:
+      - kafkanet
+    depends_on:
+      kafka:
+        condition: service_healthy
+      scrapper:
+        condition: service_started
   scrapper:
     build: ./scrapper/
+    volumes:
+      - './config.ini:/usr/src/app/config.ini'
     ports:
       - "8000:5000"
     networks:
-      - app-tier
+      - kafkanet
     depends_on:
       kafka:
         condition: service_healthy
