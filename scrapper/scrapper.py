@@ -14,18 +14,28 @@ admin_client = KafkaAdminClient(bootstrap_servers="kafka:9092")
 topics = admin_client.list_topics()
 
 # Create topics
-topic_in = NewTopic(
-    name=config['kafka']['TopicInName'],
-    num_partitions=int(config['kafka']['TopicInPartitions']),
-    replication_factor=int(config['kafka']['TopicInReplication'])
+topic_in_binance = NewTopic(
+    name=config['kafka']['TopicIn_Binance'],
+    num_partitions=int(config['kafka']['TopicInPartitions_Binance']),
+    replication_factor=int(config['kafka']['TopicInReplication_Binance'])
 )
-topic_out = NewTopic(
-    name=config['kafka']['TopicOutName'],
-    num_partitions=int(config['kafka']['TopicOutPartitions']),
-    replication_factor=int(config['kafka']['TopicOutReplication'])
+topic_out_binance = NewTopic(
+    name=config['kafka']['TopicOut_Binance'],
+    num_partitions=int(config['kafka']['TopicOutPartitions_Binance']),
+    replication_factor=int(config['kafka']['TopicOutReplication_Binance'])
+)
+topic_in_rssfeed = NewTopic(
+    name=config['kafka']['TopicIn_RSSfeed'],
+    num_partitions=int(config['kafka']['TopicInPartitions_RSSfeed']),
+    replication_factor=int(config['kafka']['TopicInReplication_RSSfeed'])
+)
+topic_out_rssfeed = NewTopic(
+    name=config['kafka']['TopicOut_RSSfeed'],
+    num_partitions=int(config['kafka']['TopicOutPartitions_RSSfeed']),
+    replication_factor=int(config['kafka']['TopicOutReplication_RSSfeed'])
 )
 
-new_topics = [topic_in, topic_out]
+new_topics = [topic_in_binance, topic_out_binance, topic_in_rssfeed, topic_out_rssfeed]
 
 for topic in new_topics:
     if topic.name not in topics:

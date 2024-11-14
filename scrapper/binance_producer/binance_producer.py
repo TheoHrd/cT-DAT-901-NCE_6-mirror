@@ -1,5 +1,5 @@
 # binance_producer.py
-
+import configparser
 import json
 import sys
 import time
@@ -10,13 +10,16 @@ import requests
 
 
 class BinanceProducer:
-    def __init__(self, symbols=None, topic='entries_raw', bootstrap_servers='kafka:9092'):
+    def __init__(self, symbols=None, config_file='config.ini'):
+
         if symbols is None:
             symbols = ['btcusdt', 'etcusdt', 'bnbusdt', 'xprusdt', 'solusdt', 'trxusdt']
 
+        config = configparser.ConfigParser()
+        config.read(config_file)
         self.symbols = [str(symbol).lower() for symbol in symbols]
-        self.topic = topic
-        self.bootstrap_servers = bootstrap_servers
+        self.topic = config['kafka']['TopicIn_Binance']
+        self.kafka_servers = config['kafka']['kafkaServers']
         self.producer = None
         self.ws_connections = []
 
@@ -125,7 +128,7 @@ if __name__ == "__main__":
         'rvnusdt', 'arusdt', 'crvusdt', 'sushiusdt', 'batusdt', 'omgusdt', 'dydxusdt', 'ankrusdt', 'ontusdt', 'zilusdt'
     ]
 
-    producer = BinanceProducer(symbols=symbols, topic='entries_raw', bootstrap_servers='kafka:9092')
+    producer = BinanceProducer(symbols=symbols)
 
     try:
         producer.start()
