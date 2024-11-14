@@ -13,7 +13,9 @@ admin_client = KafkaAdminClient(bootstrap_servers="kafka:9092")
 # List all topics
 topics = admin_client.list_topics()
 
-# Create topics
+
+# Création des topics pour Binance
+
 topic_in_binance = NewTopic(
     name=config['kafka']['TopicIn_Binance'],
     num_partitions=int(config['kafka']['TopicInPartitions_Binance']),
@@ -24,6 +26,10 @@ topic_out_binance = NewTopic(
     num_partitions=int(config['kafka']['TopicOutPartitions_Binance']),
     replication_factor=int(config['kafka']['TopicOutReplication_Binance'])
 )
+
+
+# Création des topics pour RSS Feed
+
 topic_in_rssfeed = NewTopic(
     name=config['kafka']['TopicIn_RSSfeed'],
     num_partitions=int(config['kafka']['TopicInPartitions_RSSfeed']),
@@ -35,7 +41,22 @@ topic_out_rssfeed = NewTopic(
     replication_factor=int(config['kafka']['TopicOutReplication_RSSfeed'])
 )
 
-new_topics = [topic_in_binance, topic_out_binance, topic_in_rssfeed, topic_out_rssfeed]
+
+# Création des topics pour Google Trends
+
+topic_in_trends = NewTopic(
+    name=config['kafka']['TopicIn_Trends'],
+    num_partitions=int(config['kafka']['TopicInPartitions_Trends']),
+    replication_factor=int(config['kafka']['TopicInReplication_Trends'])
+)
+topic_out_trends = NewTopic(
+    name=config['kafka']['TopicOut_Trends'],
+    num_partitions=int(config['kafka']['TopicOutPartitions_Trends']),
+    replication_factor=int(config['kafka']['TopicOutReplication_Trends'])
+)
+
+new_topics = [topic_in_binance, topic_out_binance, topic_in_rssfeed, topic_out_rssfeed, topic_in_trends, topic_out_trends]
+
 
 for topic in new_topics:
     if topic.name not in topics:
