@@ -72,6 +72,16 @@ services:
       kafka:
         condition: service_healthy
 
+  rssfeed-producer:
+    build: ./scrapper/RSSfeed_producer
+    volumes:
+      - './config.ini:/usr/src/app/config.ini'
+    networks:
+      - kafkanet
+    depends_on:
+      kafka:
+        condition: service_healthy
+
   ### DRUID SERVICES BELOW ###
   
   postgres:
