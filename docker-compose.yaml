@@ -82,6 +82,16 @@ services:
       kafka:
         condition: service_healthy
 
+  trends-producer:
+    build: ./scrapper/trends_producer
+    volumes:
+      - './config.ini:/usr/src/app/config.ini'
+    networks:
+      - kafkanet
+    depends_on:
+      kafka:
+        condition: service_healthy
+
   ### DRUID SERVICES BELOW ###
   
   postgres:
