@@ -60,7 +60,7 @@ class BinanceProducer:
 
     def start(self):
         self.producer = KafkaProducer(
-            bootstrap_servers=self.bootstrap_servers,
+            bootstrap_servers=self.kafka_servers,
             value_serializer=lambda v: json.dumps(v).encode('utf-8'),
             key_serializer=lambda v: v if isinstance(v, bytes) else v.encode('utf-8')
         )

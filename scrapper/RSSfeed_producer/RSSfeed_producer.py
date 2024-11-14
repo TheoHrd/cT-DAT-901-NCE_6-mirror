@@ -17,6 +17,12 @@ class RSSFeedProducer:
         config.read(config_file)
         if feed_urls is None:
             feed_urls = [
+                'https://crypto.news/feed/',
+                'https://cryptobriefing.com/feed/',
+                'https://www.newsbtc.com/feed/',
+                'https://bitcoinist.com/feed/',
+                'https://www.coindesk.com/tag/cryptocurrency/',
+                'https://bitcoinmagazine.com/.rss/full/',
                 'https://cointelegraph.com/rss',
                 'https://news.bitcoin.com/feed/',
                 'https://www.coindesk.com/arc/outboundfeeds/rss/'
