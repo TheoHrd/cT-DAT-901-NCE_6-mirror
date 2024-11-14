@@ -49,12 +49,23 @@ services:
         condition: service_healthy
       scrapper:
         condition: service_started
+
   scrapper:
     build: ./scrapper/
     volumes:
       - './config.ini:/usr/src/app/config.ini'
     ports:
       - "8000:5000"
+    networks:
+      - kafkanet
+    depends_on:
+      kafka:
+        condition: service_healthy
+
+  binance-producer:
+    build: ./scrapper/binance_producer
+    volumes:
+      - './config.ini:/usr/src/app/config.ini'
     networks:
       - kafkanet
     depends_on:
