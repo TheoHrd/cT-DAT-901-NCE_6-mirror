@@ -31,6 +31,7 @@ services:
       interval: 1s
       timeout: 60s
       retries: 60
+  
   spark:
     image: 'bitnami/spark:latest'
     command: 'spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.3 /app/spark.py'
@@ -47,6 +48,7 @@ services:
         condition: service_healthy
       scrapper:
         condition: service_started
+  
   scrapper:
     build: ./scrapper/
     volumes:
@@ -185,8 +187,8 @@ services:
     ports:
       - "3005:80"
     restart: unless-stopped
-    security_opt:
-      - no-new-privileges:true
-    read_only: true  
-    tmpfs:
-      - /tmp
+    #security_opt:
+    #  - no-new-privileges:true
+    #read_only: true  
+    #tmpfs:
+    #  - /tmp

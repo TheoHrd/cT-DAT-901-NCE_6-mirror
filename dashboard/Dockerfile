@@ -1,3 +1,4 @@
+# BUILD
 FROM node:20-alpine AS build
 
 WORKDIR /app
@@ -12,12 +13,14 @@ COPY . .
 
 RUN pnpm run build
 
-FROM nginx:alpine
+# NGINX
+FROM nginx:latest as prod
 
 COPY --from=build /app/build /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/nginx.conf
 
-USER nginx
+EXPOSE 80/tcp
 
-EXPOSE 80
 
+#CMD ["tail", "-f", "/dev/null"]
 CMD ["nginx", "-g", "daemon off;"]
