@@ -80,7 +80,7 @@ class RSSFeedProducer:
 
 
 if __name__ == "__main__":
-    producer = RSSFeedProducer(polling_interval=60)
+    producer = RSSFeedProducer(polling_interval=10)
 
     try:
         producer.start()
