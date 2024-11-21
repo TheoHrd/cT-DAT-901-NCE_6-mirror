@@ -211,3 +211,22 @@ services:
       - environment
     networks:
       - kafkanet
+
+  dashboard:
+    container_name: dashboard
+    build: ./dashboard
+    ports:
+      - "3005:80"
+    restart: unless-stopped
+    #security_opt:
+    #  - no-new-privileges:true
+    #read_only: true  
+    #tmpfs:
+    #  - /tmp
+
+  socket-api:
+    container_name: socket-api
+    build: ./socket-api
+    ports:
+      - "3006:3006"
+    restart: unless-stopped
