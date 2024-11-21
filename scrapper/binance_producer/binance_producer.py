@@ -13,7 +13,7 @@ class BinanceProducer:
     def __init__(self, symbols=None, config_file='config.ini'):
 
         if symbols is None:
-            symbols = ['btcusdt', 'etcusdt', 'bnbusdt', 'xprusdt', 'solusdt', 'trxusdt']
+            symbols = ['btcusdt']
 
         config = configparser.ConfigParser()
         config.read(config_file)
@@ -104,29 +104,32 @@ class BinanceProducer:
         sys.exit(0)
 
 
+def get_usdt_pairs():
+    url = 'https://api.binance.com/api/v3/exchangeInfo'
+    response = requests.get(url)
+    data = response.json()
+    usdt_pairs = []
+    for symbol in data['symbols']:
+        if symbol['quoteAsset'] == 'USDT' and symbol['status'] == 'TRADING':
+            usdt_pairs.append(symbol['symbol'].lower())
+    return usdt_pairs
+
 if __name__ == "__main__":
-    def get_usdt_pairs():
-        url = 'https://api.binance.com/api/v3/exchangeInfo'
-        response = requests.get(url)
-        data = response.json()
-        usdt_pairs = []
-        for symbol in data['symbols']:
-            if symbol['quoteAsset'] == 'USDT' and symbol['status'] == 'TRADING':
-                usdt_pairs.append(symbol['symbol'].lower())
-        return usdt_pairs
 
-    symbols = get_usdt_pairs()
+    # Get available USDT pairs on Binance
+    available_pairs = get_usdt_pairs()
 
-    symbols_hard_coded = [
-        'btcusdt', 'ethusdt', 'bnbusdt', 'xrpusdt', 'adausdt', 'solusdt', 'dogeusdt', 'maticusdt', 'dotusdt', 'ltcusdt',
-        'shibusdt', 'trxusdt', 'avaxusdt', 'uniusdt', 'linkusdt', 'atomusdt', 'xlmusdt', 'ftmusdt', 'bchusdt',
-        'algousdt',
-        'vetusdt', 'egldusdt', 'icpusdt', 'filusdt', 'hbarusdt', 'sandusdt', 'manausdt', 'thetausdt', 'aaveusdt',
-        'axsusdt',
-        'wavesusdt', 'compusdt', 'zecusdt', 'dashusdt', 'nearusdt', 'chzusdt', 'enjusdt', 'oneusdt', 'galausdt',
-        'iotxusdt',
-        'rvnusdt', 'arusdt', 'crvusdt', 'sushiusdt', 'batusdt', 'omgusdt', 'dydxusdt', 'ankrusdt', 'ontusdt', 'zilusdt'
-    ]
+    # Get Cryptocurrencies from config
+    config = configparser.ConfigParser()
+    config.read('config.ini')
+    
+    # Make USDT pairs from config
+    pairs = [f'{symbol}usdt' for symbol in eval(config['crypto']['cryptoSymbols'].lower())]
+
+    # Final list is the pairs from config that are available on Binance
+    symbols = list(set(available_pairs) & set(pairs))
+
+    # print(symbols)
 
     producer = BinanceProducer(symbols=symbols)
 
