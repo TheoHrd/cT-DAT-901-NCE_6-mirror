@@ -14,6 +14,7 @@ networks:
     driver: bridge
 
 services:
+
   kafka:
     image: 'bitnami/kafka:latest'
     ports:
@@ -33,6 +34,9 @@ services:
       interval: 1s
       timeout: 60s
       retries: 60
+    logging:
+      driver: none
+      
   spark:
     image: 'bitnami/spark:latest'
     command: 'spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.3 /app/spark.py'
@@ -49,6 +53,16 @@ services:
         condition: service_healthy
       scrapper:
         condition: service_started
+
+  sentiment-analysis:
+    build: ./sentiment
+    volumes:
+      - './config.ini:/usr/src/app/config.ini'
+    networks:
+      - kafkanet
+    depends_on:
+      kafka:
+        condition: service_healthy
 
   scrapper:
     build: ./scrapper/
