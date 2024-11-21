@@ -1,0 +1,38 @@
+{
+    "type": "kafka",
+    "spec": {
+        "ioConfig": {
+            "type": "kafka",
+            "consumerProperties": {
+                "bootstrap.servers": "kafka:9092"
+            },
+            "topic": "entries_processed_RSSfeed",
+            "inputFormat": {
+                "type": "json"
+            },
+            "useEarliestOffset": true
+        },
+        "tuningConfig": {
+            "type": "kafka"
+        },
+        "dataSchema": {
+            "dataSource": "entries_processed_RSSfeed-kafka-supervisor-console",
+            "timestampSpec": {
+                "column": "timestamp",
+                "format": "iso"
+            },
+            "dimensionsSpec": {
+                "dimensions": [
+                    "subject",
+                    "sentiment",
+                    "date"
+                ]
+            },
+            "granularitySpec": {
+                "queryGranularity": "none",
+                "rollup": false,
+                "segmentGranularity": "day"
+            }
+        }
+    }
+}
