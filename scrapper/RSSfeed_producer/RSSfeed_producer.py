@@ -16,17 +16,7 @@ class RSSFeedProducer:
         config = configparser.ConfigParser()
         config.read(config_file)
         if feed_urls is None:
-            feed_urls = [
-                'https://crypto.news/feed/',
-                'https://cryptobriefing.com/feed/',
-                'https://www.newsbtc.com/feed/',
-                'https://bitcoinist.com/feed/',
-                'https://www.coindesk.com/tag/cryptocurrency/',
-                'https://bitcoinmagazine.com/.rss/full/',
-                'https://cointelegraph.com/rss',
-                'https://news.bitcoin.com/feed/',
-                'https://www.coindesk.com/arc/outboundfeeds/rss/'
-            ]
+            feed_urls = eval(config['rss']['feedUrls'])
         self.feed_urls = feed_urls
         self.topic = config['kafka']['TopicIn_RSSfeed']
         self.kafka_servers = config['kafka']['kafkaServers']
@@ -90,7 +80,7 @@ class RSSFeedProducer:
 
 
 if __name__ == "__main__":
-    producer = RSSFeedProducer(polling_interval=60)
+    producer = RSSFeedProducer(polling_interval=10)
 
     try:
         producer.start()

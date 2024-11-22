@@ -17,7 +17,7 @@ class TrendsProducer:
         config = configparser.ConfigParser()
         config.read(config_file)
         if keywords is None:
-            keywords = ['bitcoin', 'ethereum', 'binance', 'ripple', 'solana', 'tron']
+            keywords = eval(config['crypto']['cryptoNames'].lower())
 
         self.keywords = keywords
         self.topic = config['kafka']['TopicIn_Trends']
