@@ -1,17 +1,14 @@
 package main
 
 import (
-	"fmt"
+	//"fmt"
 	"sync"
 	"socket-api/socket"
-	//"socket-api/druid"
+	"socket-api/fetcher"
 )
 
 
-
 func main() {
-	fmt.Printf("yo")
-
 
 	var wg sync.WaitGroup
 
@@ -20,4 +17,6 @@ func main() {
 		defer wg.Done()
 		socket.StartServer(":3006")
 	}()
+
+	fetcher.DruidClient()
 }

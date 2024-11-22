@@ -44,9 +44,6 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 
 func StartServer(port string) {
 
-	fmt.Printf("hello")
-
-
 
 	http.HandleFunc("/ws", handleWebSocket)
 

@@ -8,7 +8,17 @@
             },
             "topic": "entries_processed_RSSfeed",
             "inputFormat": {
-                "type": "json"
+                "type": "kafka",
+                "keyFormat": {
+                    "type": "regex",
+                    "pattern": "([\\s\\S]*)",
+                    "columns": [
+                        "line"
+                    ]
+                },
+                "valueFormat": {
+                    "type": "json"
+                }
             },
             "useEarliestOffset": true
         },
@@ -16,16 +26,24 @@
             "type": "kafka"
         },
         "dataSchema": {
-            "dataSource": "entries_processed_RSSfeed-kafka-supervisor-console",
+            "dataSource": "sentiment_analysis",
             "timestampSpec": {
-                "column": "timestamp",
-                "format": "iso"
+                "column": "date",
+                "format": "posix"
             },
             "dimensionsSpec": {
                 "dimensions": [
+                    {
+                        "type": "double",
+                        "name": "sentiment"
+                    },
                     "subject",
-                    "sentiment",
-                    "date"
+                    {
+                        "type": "long",
+                        "name": "kafka.timestamp"
+                    },
+                    "kafka.topic",
+                    "kafka.key"
                 ]
             },
             "granularitySpec": {
