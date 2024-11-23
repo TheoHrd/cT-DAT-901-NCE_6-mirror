@@ -3,49 +3,83 @@ package socket
 import (
 	"fmt"
 	"net/http"
+	"log"
+	"sync"
+	"time"
 
 	"github.com/gorilla/websocket"
 )
 
+// Gestion des connexions clients
+var clients = make(map[*websocket.Conn]bool) // Ensemble des clients connectés
+var broadcast = make(chan string)           // Canal pour diffuser les messages
 var upgrader = websocket.Upgrader{
 	CheckOrigin: func(r *http.Request) bool {
-		return true // Not secure
+		return true // Autoriser toutes les origines
 	},
 }
+var mutex = sync.Mutex{} // Pour protéger l'accès aux clients
+
 
 func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 
-	conn, err := upgrader.Upgrade(w, r, nil)
+	ws, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		fmt.Println("Erreur lors de l'upgrade WebSocket :", err)
+		log.Printf("Erreur de mise à niveau : %v", err)
 		return
 	}
-	defer conn.Close()
+	defer ws.Close()
 
-	fmt.Println("Nouvelle connexion WebSocket établie")
+	mutex.Lock()
+	clients[ws] = true
+	mutex.Unlock()
 
 	for {
-		_, message, err := conn.ReadMessage()
+		var msg string
+		err := ws.ReadJSON(&msg)
 		if err != nil {
-			fmt.Println("Connexion fermée :", err)
+			log.Printf("Client déconnecté : %v", err)
+			mutex.Lock()
+			delete(clients, ws)
+			mutex.Unlock()
 			break
 		}
-
-		fmt.Printf("Message reçu : %s\n", message)
-
-		
-		err = conn.WriteMessage(websocket.TextMessage, []byte("Message reçu : "+string(message)))
-		if err != nil {
-			fmt.Println("Erreur lors de l'envoi du message :", err)
-			break
-		}
+		// Ajouter le message reçu au canal broadcast
+		broadcast <- msg
+		time.Sleep(1 * time.Second)
 	}
+	
+}
+
+func handleMessages() {
+	for {
+		// Recevoir un message à diffuser
+		msg := <-broadcast
+
+		// Envoyer à tous les clients connectés
+		mutex.Lock()
+		for client := range clients {
+			err := client.WriteJSON(msg)
+			if err != nil {
+				log.Printf("Erreur lors de l'envoi à un client : %v", err)
+				client.Close()
+				delete(clients, client)
+			}
+		}
+		mutex.Unlock()
+	}
+}
+
+// Fonction publique pour envoyer un message à tous les clients
+func SendMessageToAll(message string) {
+	broadcast <- message
 }
 
 func StartServer(port string) {
 
-
 	http.HandleFunc("/ws", handleWebSocket)
+
+	go handleMessages()
 
 	fmt.Println("Serveur WebSocket démarré sur le port", port)
 	err := http.ListenAndServe(port, nil)

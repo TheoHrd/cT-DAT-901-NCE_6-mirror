@@ -2,11 +2,27 @@ package main
 
 import (
 	//"fmt"
-	"sync"
-	"socket-api/socket"
 	"socket-api/fetcher"
+	"socket-api/socket"
+	"sync"
+	"time"
 )
 
+// Cache pour les données
+var dataCache []map[string]interface{}
+var mu sync.RWMutex
+
+func updateCache(data []map[string]interface{}) {
+	mu.Lock()
+	defer mu.Unlock()
+	dataCache = data
+}
+
+func getCache() []map[string]interface{} {
+	mu.RLock()
+	defer mu.RUnlock()
+	return dataCache
+}
 
 func main() {
 
@@ -18,5 +34,22 @@ func main() {
 		socket.StartServer(":3006")
 	}()
 
-	fetcher.DruidClient()
+	ticker := time.NewTicker(1 * time.Second)
+	quit := make(chan struct{})
+	go func() {
+		for {
+			select {
+			case <-ticker.C:
+				data, err := fetcher.FetchDruid()
+
+				if err != nil {
+					updateCache(data)
+				}
+			case <-quit:
+				ticker.Stop()
+				return
+			}
+		}
+	}()
+
 }
