@@ -1,13 +1,13 @@
 version: '2.2'
 
 volumes:
-  metadata_data: {}
-  middle_var: {}
-  historical_var: {}
-  broker_var: {}
-  coordinator_var: {}
-  router_var: {}
-  druid_shared: {}
+  metadata_data: { }
+  middle_var: { }
+  historical_var: { }
+  broker_var: { }
+  coordinator_var: { }
+  router_var: { }
+  druid_shared: { }
 
 networks:
   kafkanet:
@@ -30,13 +30,13 @@ services:
       - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka:9093
       - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
     healthcheck:
-      test: ["CMD-SHELL", "kafka-topics.sh --list --bootstrap-server localhost:9092 || exit 1"]
+      test: [ "CMD-SHELL", "kafka-topics.sh --list --bootstrap-server localhost:9092 || exit 1" ]
       interval: 1s
       timeout: 60s
       retries: 60
     logging:
       driver: none
-      
+
   spark:
     image: 'bitnami/spark:latest'
     command: 'spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.3 /app/spark.py'
@@ -76,8 +76,18 @@ services:
       kafka:
         condition: service_healthy
 
-  binance-producer:
-    build: ./scrapper/binance_producer
+  binance-klines-producer:
+    build: ./scrapper/binance_Klines_producer
+    volumes:
+      - './config.ini:/usr/src/app/config.ini'
+    networks:
+      - kafkanet
+    depends_on:
+      kafka:
+        condition: service_healthy
+
+  coin-market-cap-producer:
+    build: scrapper/coinMarketCap_producer
     volumes:
       - './config.ini:/usr/src/app/config.ini'
     networks:
@@ -175,7 +185,7 @@ services:
     volumes:
       - druid_shared:/opt/shared
       - historical_var:/opt/druid/var
-    depends_on: 
+    depends_on:
       - zookeeper
       - postgres
       - coordinator
@@ -194,7 +204,7 @@ services:
     volumes:
       - druid_shared:/opt/shared
       - middle_var:/opt/druid/var
-    depends_on: 
+    depends_on:
       - zookeeper
       - postgres
       - coordinator

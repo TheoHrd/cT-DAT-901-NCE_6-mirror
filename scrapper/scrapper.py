@@ -14,18 +14,33 @@ admin_client = KafkaAdminClient(bootstrap_servers="kafka:9092")
 topics = admin_client.list_topics()
 
 
+# Création des topics pour les courbes Binance
+
+topic_in_binance_Klines = NewTopic(
+    name=config['kafka']['TopicIn_BinanceKlines'],
+    num_partitions=int(config['kafka']['TopicInPartitions_BinanceKlines']),
+    replication_factor=int(config['kafka']['TopicInReplication_BinanceKlines'])
+)
+topic_out_binance_Klines = NewTopic(
+    name=config['kafka']['TopicOut_BinanceKlines'],
+    num_partitions=int(config['kafka']['TopicOutPartitions_BinanceKlines']),
+    replication_factor=int(config['kafka']['TopicOutReplication_BinanceKlines'])
+)
+
+
 # Création des topics pour Binance
 
-topic_in_binance = NewTopic(
-    name=config['kafka']['TopicIn_Binance'],
-    num_partitions=int(config['kafka']['TopicInPartitions_Binance']),
-    replication_factor=int(config['kafka']['TopicInReplication_Binance'])
+topic_in_coin = NewTopic(
+    name=config['kafka']['TopicIn_CoinMarketCap_Coin'],
+    num_partitions=int(config['kafka']['TopicInPartitions_CoinMarketCap_Coin']),
+    replication_factor=int(config['kafka']['TopicInReplication_CoinMarketCap_Coin'])
 )
-topic_out_binance = NewTopic(
-    name=config['kafka']['TopicOut_Binance'],
-    num_partitions=int(config['kafka']['TopicOutPartitions_Binance']),
-    replication_factor=int(config['kafka']['TopicOutReplication_Binance'])
+topic_out_coin = NewTopic(
+    name=config['kafka']['TopicOut_CoinMarketCap_Coin'],
+    num_partitions=int(config['kafka']['TopicOutPartitions_CoinMarketCap_Coin']),
+    replication_factor=int(config['kafka']['TopicOutReplication_CoinMarketCap_Coin'])
 )
+
 
 
 # Création des topics pour RSS Feed
@@ -55,7 +70,7 @@ topic_out_trends = NewTopic(
     replication_factor=int(config['kafka']['TopicOutReplication_Trends'])
 )
 
-new_topics = [topic_in_binance, topic_out_binance, topic_in_rssfeed, topic_out_rssfeed, topic_in_trends, topic_out_trends]
+new_topics = [topic_in_binance_Klines, topic_out_binance_Klines, topic_in_coin, topic_out_coin, topic_in_rssfeed, topic_out_rssfeed, topic_in_trends, topic_out_trends]
 
 
 for topic in new_topics:
