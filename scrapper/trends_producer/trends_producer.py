@@ -13,7 +13,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(mess
 
 
 class TrendsProducer:
-    def __init__(self, keywords=None, config_file='config.ini', interval=900):  # Intervalle de 15 minutes
+    def __init__(self, keywords=None, config_file='config.ini', interval=900):
         config = configparser.ConfigParser()
         config.read(config_file)
         if keywords is None:
@@ -24,7 +24,6 @@ class TrendsProducer:
         self.kafka_servers = config['kafka']['kafkaServers']
         self.interval = interval
         self.producer = None
-
 
     def start(self):
         try:

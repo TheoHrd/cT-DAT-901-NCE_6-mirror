@@ -62,8 +62,19 @@ services:
       kafka:
         condition: service_healthy
 
-  binance-producer:
-    build: ./scrapper/binance_producer
+  binance-klines-producer:
+    build: ./scrapper/binance_Klines_producer
+    volumes:
+      - './config.ini:/usr/src/app/config.ini'
+    networks:
+      - kafkanet
+    depends_on:
+      kafka:
+        condition: service_healthy
+
+
+  coin-market-cap-producer:
+    build: scrapper/coinMarketCap_producer
     volumes:
       - './config.ini:/usr/src/app/config.ini'
     networks:

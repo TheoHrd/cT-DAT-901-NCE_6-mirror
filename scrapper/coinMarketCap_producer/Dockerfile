@@ -5,6 +5,6 @@ WORKDIR /usr/src/app
 COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY binance_producer.py .
+COPY coinMarketCap_producer.py .
 
-CMD ["python", "binance_producer.py"]
+CMD ["python", "coinMarketCap_producer.py"]
